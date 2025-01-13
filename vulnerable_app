@@ -1,44 +1,52 @@
 import React, { useState } from "react";
 
+const mockDatabase = {
+  1: { id: 1, name: "Alice", balance: "$10,000" },
+  2: { id: 2, name: "Bob", balance: "$5,000" },
+  3: { id: 3, name: "Charlie", balance: "$7,500" },
+};
+
 function App() {
-  const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
+  const [userId, setUserId] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
 
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
-
-  const handleDisplay = () => {
-    // Vulnerable code: rendering input directly into `dangerouslySetInnerHTML`
-    setOutput(input);
+  const handleFetchData = () => {
+    // Vulnerable code: No authentication or authorization check
+    const user = mockDatabase[userId];
+    if (user) {
+      setUserInfo(user);
+    } else {
+      setUserInfo({ error: "User not found." });
+    }
   };
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Vulnerable Web Page Example</h1>
+      <h1>Vulnerable Web Page Example: IDOR</h1>
       <p>
-        This is a demonstration of how improper handling of user input can lead
-        to XSS vulnerabilities.
+        This app demonstrates an Insecure Direct Object Reference (IDOR)
+        vulnerability by allowing users to access sensitive data without
+        proper authentication.
       </p>
       <input
         type="text"
-        value={input}
-        onChange={handleInputChange}
-        placeholder="Enter some text"
-        style={{ padding: "10px", width: "80%" }}
+        value={userId}
+        onChange={(e) => setUserId(e.target.value)}
+        placeholder="Enter user ID (e.g., 1, 2, 3)"
+        style={{ padding: "10px", width: "300px" }}
       />
       <button
-        onClick={handleDisplay}
+        onClick={handleFetchData}
         style={{
           marginLeft: "10px",
           padding: "10px 20px",
-          backgroundColor: "red",
+          backgroundColor: "blue",
           color: "white",
           border: "none",
           cursor: "pointer",
         }}
       >
-        Display
+        Fetch User Info
       </button>
       <div
         style={{
@@ -48,8 +56,20 @@ function App() {
           backgroundColor: "#f9f9f9",
         }}
       >
-        <h3>Output:</h3>
-        <div dangerouslySetInnerHTML={{ __html: output }}></div>
+        <h3>User Information:</h3>
+        {userInfo ? (
+          userInfo.error ? (
+            <p style={{ color: "red" }}>{userInfo.error}</p>
+          ) : (
+            <div>
+              <p>ID: {userInfo.id}</p>
+              <p>Name: {userInfo.name}</p>
+              <p>Balance: {userInfo.balance}</p>
+            </div>
+          )
+        ) : (
+          <p>Enter a user ID to fetch details.</p>
+        )}
       </div>
     </div>
   );

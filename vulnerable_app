@@ -1,0 +1,58 @@
+import React, { useState } from "react";
+
+function App() {
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+  };
+
+  const handleDisplay = () => {
+    // Vulnerable code: rendering input directly into `dangerouslySetInnerHTML`
+    setOutput(input);
+  };
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>Vulnerable Web Page Example</h1>
+      <p>
+        This is a demonstration of how improper handling of user input can lead
+        to XSS vulnerabilities.
+      </p>
+      <input
+        type="text"
+        value={input}
+        onChange={handleInputChange}
+        placeholder="Enter some text"
+        style={{ padding: "10px", width: "80%" }}
+      />
+      <button
+        onClick={handleDisplay}
+        style={{
+          marginLeft: "10px",
+          padding: "10px 20px",
+          backgroundColor: "red",
+          color: "white",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        Display
+      </button>
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "10px",
+          border: "1px solid #ccc",
+          backgroundColor: "#f9f9f9",
+        }}
+      >
+        <h3>Output:</h3>
+        <div dangerouslySetInnerHTML={{ __html: output }}></div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
